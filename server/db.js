@@ -1,10 +1,10 @@
-const {sequelize} = require("sequelize");
+const {Sequelize} = require("sequelize");
 const {dbConfig} = require("./config/getConfig.js");
 
 
 //创建数据库实例
 
-const dbSequelize = new sequelize({
+const dbSequelize = new Sequelize({
     database: dbConfig.database,
     username: dbConfig.username,
     password: dbConfig.password,

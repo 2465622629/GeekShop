@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const superagent = require("superagent");
-const url = require("url");
+
 const puppeteer = require("puppeteer");
 
 async function getCommodity(comUrl) {
@@ -35,14 +35,16 @@ async function getCommodityForEdge(Url) {
     await page.waitForSelector(".itemInfo-wrap");
     let comDetails = await page.evaluate(()=>{
         return{
-            title: document.querySelector(".sku-name").innerHTML,
+            title: document.querySelector(".sku-name").innerHTML.toString().trim(),
             price:document.querySelector(".price, .J-p-100010508835").innerHTML
         }
     })
     console.log(comDetails)
+    return comDetails
 
 }
 
-// getCommodity('https://item.jd.com/100010508835.html')
+module.exports={
+    getCommodityForEdge,
 
-getCommodityForEdge('https://item.jd.com/100010508835.html')
+}
