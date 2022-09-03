@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "mysql2": "^2.3.3",
     "sequelize": "^6.21.4",
+    "sequelize-cli": "^6.4.1",
     "vue": "^3.2.37",
     "vue-router": "4"
   },

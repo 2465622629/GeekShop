@@ -2,9 +2,12 @@ module.exports = {
     //mysql配置
     dbConfig:{
         database:"geekshop",
-        username:"entyhjjzl0i7",
-        password:"pscale_pw_xD8IOd4ad7Rn1l4KH_wGEgV4LaE7DJ-QHdCSAd-4cUo",
-        host:"j55jxvsd5kdn.us-east-4.psdb.cloud",
+        username:"8q7lnmi9la1e8f99v9d6",
+        password:"pscale_pw_wHJTPcSKwqNtcHYkGRFjZjP2mktwLtvJjZfUYcg2oSK",
+        host:"us-east.connect.psdb.cloud",
         port:"3306",
+    },
+    pushPlusConfig:{
+        token:"ecdcada0f537422cb96f01a404539151"
     }
 }
