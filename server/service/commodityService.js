@@ -4,37 +4,48 @@ const CommodityModel = require("../model/Commodity");
 const puppeteer = require("puppeteer");
 
 // 获取商品详情
-async function getCommodity(commodityUrl,commodityId) {
+async function getCommodity(commodityUrl, commodityId) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     // await page.setViewport({height: 1000, width: 1200})
     await page.goto(commodityUrl);
-    // 内容
     await page.waitForSelector(".itemInfo-wrap");
     let comDetails = await page.evaluate(() => {
         return {
             title: document.querySelector(".sku-name").innerHTML.toString().trim(),
             price: document.querySelector(".price, .J-p-100010508835").innerHTML,
+            commodity_id: commodityId,
+            commodity_url: commodityUrl,
         }
     })
     await browser.close();
-
-
-    //向数据库新增商品数据
-    const comm = await CommodityModel.create({
-        commodity_title: comDetails.title,
-        commodity_price: comDetails.price,
-        commodity_date: new Date().getTime(),
-        commodity_id: commodityUrl.match(/\d+/)[0],
-        commodity_url: commodityUrl
-    });
-    console.log(`data add Successful!`)
-    return comm;
+    return comDetails;
 }
 
-async function findCommodity(){
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+async function addCommodity(data) {
+    //向数据库新增商品数据
+    const comm = await CommodityModel.create({
+        commodity_title: data.title,
+        commodity_price: data.price,
+        commodity_id: data.commodity_id,
+        commodity_url: data.commodity_url,
+        commodity_date: new Date().getTime(),
+    });
+    console.log(`data add Successful!`)
+    return comm.commodity_id;
+}
+
+async function findCommodity() {
+    //从数据库查找商品信息
+    let Commodity = await CommodityModel.findAll({
+        attributes: [
+            "commodity_title",
+            "commodity_price",
+            "commodity_id",
+            "commodity_url",
+            "commodity_date"
+        ]
+    })
 }
 
 //监控商品
@@ -44,7 +55,7 @@ async function watchCommodity(Url) {
 
 //测试
 // getCommodity("https://item.jd.com/100004898713.html")
-
+// findCommodity()
 module.exports = {
     getCommodity,
 }
