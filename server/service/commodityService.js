@@ -22,6 +22,7 @@ async function getCommodity(commodityUrl, commodityId) {
     return comDetails;
 }
 
+//向数据库添加商品
 async function addCommodity(data) {
     //向数据库新增商品数据
     const comm = await CommodityModel.create({
@@ -34,8 +35,8 @@ async function addCommodity(data) {
     console.log(`data add Successful!`)
     return comm.commodity_id;
 }
-
-async function findCommodity() {
+//查找所有商品
+async function findCommodityAll() {
     //从数据库查找商品信息
     let Commodity = await CommodityModel.findAll({
         attributes: [
@@ -46,10 +47,14 @@ async function findCommodity() {
             "commodity_date"
         ]
     })
+    return Commodity
 }
 
+//通过id查找商品
+
+
 //监控商品
-async function watchCommodity(Url) {
+async function watchCommodity(commodityUrl,CommodityId) {
     // 先从数据库查询商品 如果有则监控 如果没有调用getCommodity方法添加到数据库中
 }
 
