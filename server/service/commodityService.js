@@ -2,6 +2,7 @@ const cheerio = require("cheerio");
 const superagent = require("superagent");
 const CommodityModel = require("../model/Commodity");
 const puppeteer = require("puppeteer");
+const {where} = require("sequelize");
 
 // 获取商品详情
 async function getCommodity(commodityUrl, commodityId) {
@@ -35,32 +36,75 @@ async function addCommodity(data) {
     console.log(`data add Successful!`)
     return comm.commodity_id;
 }
+
 //查找所有商品
 async function findCommodityAll() {
     //从数据库查找商品信息
-    let Commodity = await CommodityModel.findAll({
-        attributes: [
-            "commodity_title",
-            "commodity_price",
-            "commodity_id",
-            "commodity_url",
-            "commodity_date"
-        ]
-    })
-    return Commodity
+    return await CommodityModel.findAll({
+            attributes: [
+                "commodity_title",
+                "commodity_price",
+                "commodity_id",
+                "commodity_url",
+                "commodity_date"
+            ]
+        }
+    )
 }
 
 //通过id查找商品
-
+async function findCommodityById(commodityId) {
+    return await CommodityModel.findAll(
+        {
+            where: {
+                commodity_id: commodityId
+            },
+            attributes: [
+                "commodity_title",
+                "commodity_price",
+                "commodity_id",
+                "commodity_url",
+                "commodity_date"
+            ]
+        }
+    )
+}
 
 //监控商品
-async function watchCommodity(commodityUrl,CommodityId) {
+async function watchCommodity(commodityUrl, commodityId) {
+    let afterPrice = 0
+    let nowPrice = 0
+    if (commodityUrl == null || commodityUrl.length === 0) { //空值判断
+        return '未传入商品链接地址'
+    }
+    if (!commodityId) {
+        commodityId = commodityUrl.match("/\b/")[0]
+    }
+    // 从数据库查找对应商品
+    findCommodityById(commodityId).then((data) => {
+        console.log(`数据 ${data[0].dataValues}`)
+        afterPrice = data[0].dataValues.commodity_price
+    })
     // 先从数据库查询商品 如果有则监控 如果没有调用getCommodity方法添加到数据库中
+}
+
+//记录商品变化
+async function RecordCommodityPrice() {
+
 }
 
 //测试
 // getCommodity("https://item.jd.com/100004898713.html")
 // findCommodity()
+// findCommodityById("100004898713").then((data)=>{
+//     console.log(data[0].dataValues['commodity_title'])
+// })
+//查询指定商品
 module.exports = {
     getCommodity,
-}
+    findCommodityAll,
+    findCommodityById,
+    addCommodity,
+    watchCommodity,
+    RecordCommodityPrice
+};
