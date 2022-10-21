@@ -5,22 +5,25 @@ const puppeteer = require("puppeteer");
 const {where} = require("sequelize");
 
 // 获取商品详情
-async function getCommodity(commodityUrl, commodityId) {
+async function getCommodity(commodityUrl) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     // await page.setViewport({height: 1000, width: 1200})
     await page.goto(commodityUrl);
     await page.waitForSelector(".itemInfo-wrap");
-    let comDetails = await page.evaluate(() => {
+
+    let commodity_detail = await page.evaluate(() => {
         return {
             title: document.querySelector(".sku-name").innerHTML.toString().trim(),
             price: document.querySelector(".price, .J-p-100010508835").innerHTML,
-            commodity_id: commodityId,
+            commodity_id: commodityUrl.match('\\d+')[0],
             commodity_url: commodityUrl,
         }
     })
+
     await browser.close();
-    return comDetails;
+    return commodity_detail;
+
 }
 
 //向数据库添加商品
@@ -37,7 +40,7 @@ async function addCommodity(data) {
     return comm.commodity_id;
 }
 
-//查找所有商品
+//查找数据库所有商品
 async function findCommodityAll() {
     //从数据库查找商品信息
     return await CommodityModel.findAll({
@@ -85,26 +88,13 @@ async function watchCommodity(commodityUrl, commodityId) {
         console.log(`数据 ${data[0].dataValues}`)
         afterPrice = data[0].dataValues.commodity_price
     })
-    // 先从数据库查询商品 如果有则监控 如果没有调用getCommodity方法添加到数据库中
 }
 
-//记录商品变化
-async function RecordCommodityPrice() {
-
-}
-
-//测试
-// getCommodity("https://item.jd.com/100004898713.html")
-// findCommodity()
-// findCommodityById("100004898713").then((data)=>{
-//     console.log(data[0].dataValues['commodity_title'])
-// })
-//查询指定商品
 module.exports = {
     getCommodity,
     findCommodityAll,
     findCommodityById,
     addCommodity,
-    watchCommodity,
-    RecordCommodityPrice
+    watchCommodity
+
 };
